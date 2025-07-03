@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Coxinha Real Digital</title>
+  <style>
+    body { font-family:sans-serif; background:#fff3cc; margin:0; padding:0;}
+    header { background:#ffcc00; padding:10px; text-align:center; position:sticky; top:0; font-size:1.5em; }
+    section { padding:10px; }
+    h2 { color:#cc0000; margin-bottom:5px; }
+    .item, .combo, .bebida { display:flex; justify-content:space-between; margin:5px 0; }
+    .item select, .combo select, .bebida select { width:50px; }
+    .obs { background:#ffe680; padding:5px; margin:10px 0; font-size:0.9em; }
+    #resumo { background:#fff; border-top:1px solid #ccc; padding:10px; position:sticky; bottom:60px; }
+    #whatsapp-btn {
+      position:fixed; bottom:10px; right:10px;
+      background:#25d366; color:white; font-size:1.2em;
+      padding:15px; border-radius:50%; text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+  <header>Coxinha Real 📲 Pedidos</header>
+  
+  <section id="salgados">
+    <h2>Salgados (35 g – R$ 1,00)</h2>
+    <div class="item">
+      <span>Coxinha (frango)</span>
+      <select data-nome="Coxinha (35g)" data-preco="1">
+        <option value="0">0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+      </select>
+    </div>
+    <!-- Repetir para os outros sabores -->
+  </section>
+  
+  <section id="bebidas">
+    <h2>Bebidas</h2>
+    <div class="bebida">
+      <span>Refrigerante 200 ml – R$3</span>
+      <select data-nome="Refrigerante 200 ml" data-preco="3">
+        <option>0</option><option>1</option><option>2</option><option>3</option>
+      </select>
+    </div>
+    <!-- Repetir os demais -->
+  </section>
+  
+  <section id="combos">
+    <h2>Combos (salgados 20 g)</h2>
+    <div class="combo">
+      <span>A Dois – 25 salgados</span>
+      <select data-nome="Combo A Dois (25)" data-preco="20">
+        <option value="0" data-tembebida="false">Sem bebida (R$20)</option>
+        <option value="1" data-tembebida="true">Com 2x200 ml (R$24)</option>
+      </select>
+    </div>
+    <!-- Repetir Grupinho e Galera -->
+    <div class="obs">
+      * Nos Combos: salgados menores (20 g). Os salgados avulsos são 35 g.
+    </div>
+  </section>
+  
+  <div id="resumo">
+    <strong>Resumo do pedido:</strong>
+    <div id="lista"></div>
+    <div id="total">Total: R$0</div>
+  </div>
+  
+  <a id="whatsapp-btn" href="#" target="_blank">💬 WhatsApp</a>
+  
+<script>
+const selects = document.querySelectorAll('select');
+const lista = document.getElementById('lista');
+const totalEl = document.getElementById('total');
+const whatsappBtn = document.getElementById('whatsapp-btn');
+
+function atualizar(){
+  let total=0, text='';
+  selects.forEach(sel=>{
+    const qtd = parseInt(sel.value)||0;
+    if(qtd>0){
+      const nome = sel.dataset.nome;
+      const preco = parseFloat(sel.dataset.preco);
+      total += preco*qtd;
+      text += `${qtd}x ${nome} – R$${(preco*qtd).toFixed(2)}\n`;
+      // Se combo com bebida, adicionar menção
+      if(sel.dataset.tembebida==='true' && sel.value==='1' && nome.startsWith('Combo')){
+        text += `   + Refrigerante incluso\n`;
+      }
+    }
+  });
+  lista.textContent = text || '(nenhum item)';
+  totalEl.textContent = `Total: R$${total.toFixed(2)}`;
+  whatsappBtn.href = `https://wa.me/5573981741968?text=${encodeURIComponent('Pedido:%0A'+text+'Total: R$'+total.toFixed(2))}`;
+}
+selects.forEach(s=>s.addEventListener('change', atualizar));
+atualizar();
+</script>
+</body>
+</html>
