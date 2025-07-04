@@ -1,100 +1,187 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html><html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Coxinha Real Digital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coxinha Real</title>
   <style>
-    body { font-family:sans-serif; background:#fff3cc; margin:0; padding:0;}
-    header { background:#ffcc00; padding:10px; text-align:center; position:sticky; top:0; font-size:1.5em; }
-    section { padding:10px; }
-    h2 { color:#cc0000; margin-bottom:5px; }
-    .item, .combo, .bebida { display:flex; justify-content:space-between; margin:5px 0; }
-    .item select, .combo select, .bebida select { width:50px; }
-    .obs { background:#ffe680; padding:5px; margin:10px 0; font-size:0.9em; }
-    #resumo { background:#fff; border-top:1px solid #ccc; padding:10px; position:sticky; bottom:60px; }
+    body { font-family: sans-serif; background: #fff3cc; margin: 0; padding-bottom: 100px; }
+    header { background: #ffcc00; color: #000; padding: 20px; text-align: center; font-size: 1.8em; font-weight: bold; }
+    section { padding: 15px; }
+    h2 { color: #cc0000; margin-top: 30px; }
+    .item, .bebida, .combo { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; }
+    .quantidade { display: flex; gap: 5px; align-items: center; }
+    .quantidade button { background: #ffcc00; border: none; padding: 4px 8px; font-weight: bold; }
+    .obs { font-size: 0.9em; color: #444; background: #ffe680; padding: 8px; margin: 10px 0; }
+    #resumo, #cliente { background: #fff; border-top: 2px solid #ccc; padding: 10px; position: sticky; bottom: 70px; }
+    #total { font-weight: bold; margin-top: 10px; }
     #whatsapp-btn {
-      position:fixed; bottom:10px; right:10px;
-      background:#25d366; color:white; font-size:1.2em;
-      padding:15px; border-radius:50%; text-decoration:none;
+      position: fixed; bottom: 10px; right: 10px;
+      background: #25d366; color: white; font-size: 1.2em;
+      padding: 15px; border-radius: 50%; text-decoration: none;
     }
+    input[type="text"] {
+      width: 100%; padding: 8px; margin-top: 10px; font-size: 1em;
+      border: 1px solid #ccc; border-radius: 4px;
+    }
+    .sabores { padding-left: 20px; }
   </style>
 </head>
 <body>
-  <header>Coxinha Real 📲 Pedidos</header>
-  
-  <section id="salgados">
-    <h2>Salgados (35 g – R$ 1,00)</h2>
-    <div class="item">
-      <span>Coxinha (frango)</span>
-      <select data-nome="Coxinha (35g)" data-preco="1">
-        <option value="0">0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
-      </select>
-    </div>
-    <!-- Repetir para os outros sabores -->
-  </section>
-  
-  <section id="bebidas">
+  <header>Coxinha Real 📲 Pedidos</header>  <section id="cliente">
+    <label for="nomeCliente"><strong>Seu nome:</strong></label>
+    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui">
+  </section>  <section>
+    <h2>Salgados (35g – R$1,00)</h2>
+    <div id="salgados"></div>
+  </section>  <section>
     <h2>Bebidas</h2>
-    <div class="bebida">
-      <span>Refrigerante 200 ml – R$3</span>
-      <select data-nome="Refrigerante 200 ml" data-preco="3">
-        <option>0</option><option>1</option><option>2</option><option>3</option>
-      </select>
-    </div>
-    <!-- Repetir os demais -->
-  </section>
-  
-  <section id="combos">
-    <h2>Combos (salgados 20 g)</h2>
-    <div class="combo">
-      <span>A Dois – 25 salgados</span>
-      <select data-nome="Combo A Dois (25)" data-preco="20">
-        <option value="0" data-tembebida="false">Sem bebida (R$20)</option>
-        <option value="1" data-tembebida="true">Com 2x200 ml (R$24)</option>
-      </select>
-    </div>
-    <!-- Repetir Grupinho e Galera -->
+    <div id="bebidas"></div>
+  </section>  <section>
+    <h2>Combos (salgados 20g)</h2>
+    <div id="combos"></div>
     <div class="obs">
-      * Nos Combos: salgados menores (20 g). Os salgados avulsos são 35 g.
+      * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
     </div>
-  </section>
-  
-  <div id="resumo">
+  </section>  <div id="resumo">
     <strong>Resumo do pedido:</strong>
     <div id="lista"></div>
-    <div id="total">Total: R$0</div>
-  </div>
-  
-  <a id="whatsapp-btn" href="#" target="_blank">💬 WhatsApp</a>
-  
-<script>
-const selects = document.querySelectorAll('select');
-const lista = document.getElementById('lista');
-const totalEl = document.getElementById('total');
-const whatsappBtn = document.getElementById('whatsapp-btn');
+    <div id="total">Total: R$0,00</div>
+  </div><a id="whatsapp-btn" href="#" target="_blank">💬 WhatsApp</a>
 
-function atualizar(){
-  let total=0, text='';
-  selects.forEach(sel=>{
-    const qtd = parseInt(sel.value)||0;
-    if(qtd>0){
-      const nome = sel.dataset.nome;
-      const preco = parseFloat(sel.dataset.preco);
-      total += preco*qtd;
-      text += `${qtd}x ${nome} – R$${(preco*qtd).toFixed(2)}\n`;
-      // Se combo com bebida, adicionar menção
-      if(sel.dataset.tembebida==='true' && sel.value==='1' && nome.startsWith('Combo')){
-        text += `   + Refrigerante incluso\n`;
+<script>
+const salgadosLista = [
+  "Coxinha (Frango)", "Palitinho (Queijo com Presunto)", "Balãozinho (Frango com Requeijão)",
+  "Travesseirinho (Carne)", "Kibe de Queijo", "Kibe de Carne",
+  "Churros de Doce de Leite", "Churros de Chocolate",
+  "Enroladinho de Salsicha", "Boliviano (Carne)"
+];
+
+const bebidas = [
+  { nome: "Guaraná 200ml", preco: 3 },
+  { nome: "Pepsi 200ml", preco: 3 },
+  { nome: "Guaraná Lata 350ml", preco: 4 },
+  { nome: "Pepsi Lata 350ml", preco: 4 },
+  { nome: "Água Mineral", preco: 2 },
+  { nome: "Água com Gás", preco: 3 },
+  { nome: "Guaraná 1L", preco: 7 },
+  { nome: "Pepsi 1L", preco: 7 },
+  { nome: "IT Guaraná", preco: 8 },
+  { nome: "IT Cola", preco: 8 },
+];
+
+const combos = [
+  { nome: "Combo A Dois", preco: 20, qtd: 25 },
+  { nome: "Combo Grupinho", preco: 38, qtd: 50 },
+  { nome: "Combo Galera", preco: 72, qtd: 100 },
+];
+
+function criarLista(id, itens, precoFixo = 1) {
+  const container = document.getElementById(id);
+  itens.forEach(item => {
+    const div = document.createElement('div');
+    div.className = id.slice(0, -1);
+    div.innerHTML = `
+      <span>${item.nome || item}</span>
+      <div class="quantidade">
+        <button onclick="alterarQtd(this, -1)">-</button>
+        <span data-nome="${item.nome || item}" data-preco="${item.preco || precoFixo}" data-qtd="0">0</span>
+        <button onclick="alterarQtd(this, 1)">+</button>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function criarCombos() {
+  const container = document.getElementById('combos');
+  combos.forEach(combo => {
+    const div = document.createElement('div');
+    div.className = 'combo';
+    const saboresDiv = document.createElement('div');
+    saboresDiv.className = 'sabores';
+
+    const sabores = [...salgadosLista].map(sabor => `
+      <div class="item">
+        <span>${sabor}</span>
+        <div class="quantidade">
+          <button onclick="alterarQtd(this, -1, '${combo.nome}')">-</button>
+          <span data-nome="${sabor}" data-preco="0" data-qtd="0" data-combo="${combo.nome}">0</span>
+          <button onclick="alterarQtd(this, 1, '${combo.nome}')">+</button>
+        </div>
+      </div>`).join('');
+
+    saboresDiv.innerHTML = sabores;
+    div.innerHTML = `<span>${combo.nome} – ${combo.qtd} mini salgados – R$${combo.preco}</span>`;
+    div.appendChild(saboresDiv);
+    container.appendChild(div);
+  });
+}
+
+function alterarQtd(btn, delta, comboNome = null) {
+  const span = btn.parentNode.querySelector('span');
+  let qtd = parseInt(span.dataset.qtd);
+  let novo = qtd + delta;
+
+  if (novo < 0) novo = 0;
+
+  if (comboNome) {
+    // limitar a soma total dentro do combo
+    const total = [...document.querySelectorAll(`[data-combo='${comboNome}']`)]
+      .reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
+    const combo = combos.find(c => c.nome === comboNome);
+    if (total + delta > combo.qtd) return;
+  }
+
+  span.dataset.qtd = novo;
+  span.textContent = novo;
+  atualizar();
+}
+
+function atualizar() {
+  const spans = document.querySelectorAll('[data-nome]');
+  const lista = document.getElementById('lista');
+  const nomeCliente = document.getElementById('nomeCliente').value.trim();
+  const totalEl = document.getElementById('total');
+
+  let total = 0;
+  let text = '';
+
+  const combosAgrupados = {};
+
+  spans.forEach(el => {
+    const qtd = parseInt(el.dataset.qtd);
+    if (qtd > 0) {
+      const nome = el.dataset.nome;
+      const preco = parseFloat(el.dataset.preco);
+      total += preco * qtd;
+      const combo = el.dataset.combo;
+
+      if (combo) {
+        if (!combosAgrupados[combo]) combosAgrupados[combo] = [];
+        combosAgrupados[combo].push(`- ${qtd}x ${nome}`);
+      } else {
+        text += `${qtd}x ${nome}\n`;
       }
     }
   });
+
+  Object.entries(combosAgrupados).forEach(([combo, itens]) => {
+    const comboData = combos.find(c => c.nome === combo);
+    text += `\n${combo} – ${comboData.qtd} mini salgados\n`;
+    text += itens.join('\n') + '\n';
+    total += comboData.preco;
+  });
+
   lista.textContent = text || '(nenhum item)';
   totalEl.textContent = `Total: R$${total.toFixed(2)}`;
-  whatsappBtn.href = `https://wa.me/5573981741968?text=${encodeURIComponent('Pedido:%0A'+text+'Total: R$'+total.toFixed(2))}`;
+
+  const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}\n\n` + text + `\nTotal: R$${total.toFixed(2)}`;
+  document.getElementById('whatsapp-btn').href =
+    `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
 }
-selects.forEach(s=>s.addEventListener('change', atualizar));
+
+criarLista('salgados', salgadosLista);
+criarLista('bebidas', bebidas);
+criarCombos();
 atualizar();
-</script>
-</body>
+</script></body>
 </html>
