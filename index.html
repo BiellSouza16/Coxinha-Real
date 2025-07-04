@@ -23,7 +23,11 @@
       width: 100%; padding: 8px; margin-top: 10px; font-size: 1em;
       border: 1px solid #ccc; border-radius: 4px;
     }
-    .sabores { padding-left: 20px; }
+    .sabores { padding-left: 20px; margin-top: 10px; }
+    .combo-box { border: 2px solid #ffcc00; padding: 15px; margin: 10px 0; background: #fff8dc; border-radius: 10px; }
+    .combo-title { font-size: 1.2em; font-weight: bold; margin-bottom: 5px; color: #b30000; }
+    .combo-option { margin: 5px 0; font-weight: bold; }
+    .combo-sub { font-size: 0.9em; color: #444; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -38,10 +42,10 @@
     <div id="bebidas"></div>
   </section>  <section>
     <h2>Combos (salgados 20g)</h2>
-    <div id="combos"></div>
     <div class="obs">
       * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
     </div>
+    <div id="combos"></div>
   </section>  <div id="resumo">
     <strong>Resumo do pedido:</strong>
     <div id="lista"></div>
@@ -70,9 +74,18 @@ const bebidas = [
 ];
 
 const combos = [
-  { nome: "Combo A Dois", preco: 20, qtd: 25 },
-  { nome: "Combo Grupinho", preco: 38, qtd: 50 },
-  { nome: "Combo Galera", preco: 72, qtd: 100 },
+  { nome: "Combo A Dois", opcoes: [
+    { titulo: "Sem bebida", preco: 20, qtd: 25 },
+    { titulo: "Com 2x 200ml", preco: 24, qtd: 25 }
+  ]},
+  { nome: "Combo Grupinho", opcoes: [
+    { titulo: "Sem bebida", preco: 35, qtd: 50 },
+    { titulo: "Com 1L", preco: 40, qtd: 50 }
+  ]},
+  { nome: "Combo Galera", opcoes: [
+    { titulo: "Sem bebida", preco: 65, qtd: 100 },
+    { titulo: "Com 2L", preco: 70, qtd: 100 }
+  ]},
 ];
 
 function criarLista(id, itens, precoFixo = 1) {
@@ -94,25 +107,28 @@ function criarLista(id, itens, precoFixo = 1) {
 function criarCombos() {
   const container = document.getElementById('combos');
   combos.forEach(combo => {
-    const div = document.createElement('div');
-    div.className = 'combo';
-    const saboresDiv = document.createElement('div');
-    saboresDiv.className = 'sabores';
-
-    const sabores = [...salgadosLista].map(sabor => `
-      <div class="item">
-        <span>${sabor}</span>
-        <div class="quantidade">
-          <button onclick="alterarQtd(this, -1, '${combo.nome}')">-</button>
-          <span data-nome="${sabor}" data-preco="0" data-qtd="0" data-combo="${combo.nome}">0</span>
-          <button onclick="alterarQtd(this, 1, '${combo.nome}')">+</button>
-        </div>
-      </div>`).join('');
-
-    saboresDiv.innerHTML = sabores;
-    div.innerHTML = `<span>${combo.nome} – ${combo.qtd} mini salgados – R$${combo.preco}</span>`;
-    div.appendChild(saboresDiv);
-    container.appendChild(div);
+    combo.opcoes.forEach((opcao, i) => {
+      const box = document.createElement('div');
+      box.className = 'combo-box';
+      const idCombo = `${combo.nome} – ${opcao.titulo}`;
+      box.innerHTML = `
+        <div class="combo-title">${combo.nome} – ${opcao.titulo}</div>
+        <div class="combo-sub">${opcao.qtd} mini salgados – R$${opcao.preco.toFixed(2)}</div>
+      `;
+      const saboresDiv = document.createElement('div');
+      saboresDiv.className = 'sabores';
+      saboresDiv.innerHTML = salgadosLista.map(sabor => `
+        <div class="item">
+          <span>${sabor}</span>
+          <div class="quantidade">
+            <button onclick="alterarQtd(this, -1, '${idCombo}')">-</button>
+            <span data-nome="${sabor}" data-preco="0" data-qtd="0" data-combo="${idCombo}">${0}</span>
+            <button onclick="alterarQtd(this, 1, '${idCombo}')">+</button>
+          </div>
+        </div>`).join('');
+      box.appendChild(saboresDiv);
+      container.appendChild(box);
+    });
   });
 }
 
@@ -120,17 +136,14 @@ function alterarQtd(btn, delta, comboNome = null) {
   const span = btn.parentNode.querySelector('span');
   let qtd = parseInt(span.dataset.qtd);
   let novo = qtd + delta;
-
   if (novo < 0) novo = 0;
-
   if (comboNome) {
-    // limitar a soma total dentro do combo
     const total = [...document.querySelectorAll(`[data-combo='${comboNome}']`)]
       .reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
-    const combo = combos.find(c => c.nome === comboNome);
+    const combo = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
+      .find(c => c.combo === comboNome);
     if (total + delta > combo.qtd) return;
   }
-
   span.dataset.qtd = novo;
   span.textContent = novo;
   atualizar();
@@ -141,12 +154,9 @@ function atualizar() {
   const lista = document.getElementById('lista');
   const nomeCliente = document.getElementById('nomeCliente').value.trim();
   const totalEl = document.getElementById('total');
-
   let total = 0;
   let text = '';
-
   const combosAgrupados = {};
-
   spans.forEach(el => {
     const qtd = parseInt(el.dataset.qtd);
     if (qtd > 0) {
@@ -154,7 +164,6 @@ function atualizar() {
       const preco = parseFloat(el.dataset.preco);
       total += preco * qtd;
       const combo = el.dataset.combo;
-
       if (combo) {
         if (!combosAgrupados[combo]) combosAgrupados[combo] = [];
         combosAgrupados[combo].push(`- ${qtd}x ${nome}`);
@@ -163,20 +172,17 @@ function atualizar() {
       }
     }
   });
-
   Object.entries(combosAgrupados).forEach(([combo, itens]) => {
-    const comboData = combos.find(c => c.nome === combo);
-    text += `\n${combo} – ${comboData.qtd} mini salgados\n`;
+    const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
+      .find(c => c.combo === combo);
+    text += `\n${combo}\n`;
     text += itens.join('\n') + '\n';
     total += comboData.preco;
   });
-
   lista.textContent = text || '(nenhum item)';
   totalEl.textContent = `Total: R$${total.toFixed(2)}`;
-
   const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}\n\n` + text + `\nTotal: R$${total.toFixed(2)}`;
-  document.getElementById('whatsapp-btn').href =
-    `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
+  document.getElementById('whatsapp-btn').href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
 }
 
 criarLista('salgados', salgadosLista);
