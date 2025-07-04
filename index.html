@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -132,28 +133,65 @@
   <header>
     <img src="logo.png" alt="Logo da empresa">
     Coxinha Real 📲 Pedidos
-  </header>  <section id="cliente">
+  </header>
+
+  <section id="cliente">
     <label for="nomeCliente"><strong>Seu nome:</strong></label>
     <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui">
-  </section>  <section>
+  </section>
+
+  <section>
     <h2>Salgados (35g – R$1,00)</h2>
     <div id="salgados"></div>
-  </section>  <section>
+  </section>
+
+  <section>
     <h2>Bebidas</h2>
     <div id="bebidas"></div>
-  </section>  <section>
+  </section>
+
+  <section>
     <h2>Combos (salgados 20g)</h2>
     <div class="obs">
       * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
     </div>
     <div id="combos"></div>
-  </section>  <div id="resumo">
+  </section>
+
+  <div id="resumo">
     <strong>Resumo do pedido:</strong>
     <div id="lista"></div>
     <div id="total">Total: R$0,00</div>
-  </div><a id="whatsapp-btn" href="#" onclick="enviarPedido(event)" target="_blank">✅ Finalizar pedido no WhatsApp</a>
+  </div>
 
-<script>
-// [ Código JavaScript será mantido com ajustes de validação que não cabem aqui na prévia completa ]
-</script></body>
+  <a id="whatsapp-btn" href="#" onclick="enviarPedido(event)" target="_blank">✅ Finalizar pedido no WhatsApp</a>
+
+  <script>
+    function enviarPedido(event) {
+      event.preventDefault();
+      const nome = document.getElementById("nomeCliente").value.trim();
+      const total = document.getElementById("total").textContent;
+      const pedido = document.getElementById("lista").textContent.trim();
+
+      if (!nome) {
+        alert("Por favor, digite seu nome antes de finalizar o pedido.");
+        return;
+      }
+
+      if (!pedido || pedido === "(nenhum item)") {
+        alert("Seu pedido está vazio. Por favor, selecione ao menos um item.");
+        return;
+      }
+
+      if (total.endsWith("R$0,00")) {
+        alert("O total do pedido está zerado. Verifique os itens selecionados.");
+        return;
+      }
+
+      const texto = `Resumo do pedido de ${nome}%0A${pedido}%0A${total}`;
+      const link = `https://wa.me/5573981741968?text=${encodeURIComponent(texto)}`;
+      window.open(link, '_blank');
+    }
+  </script>
+</body>
 </html>
