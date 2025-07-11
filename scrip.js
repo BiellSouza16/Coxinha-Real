@@ -242,7 +242,11 @@ spans.forEach(el => {
         combosUsados.add(combo.replace('-refri',''));
       } else {
         total += preco * qtd;
-        avulsos += `${qtd}x ${nome}\n`;
+        let nomeFormatado = nome;
+if (!/Kibe|Churros/i.test(nome)) {
+  nomeFormatado = nome.replace(/\s*\(.*?\)/g, '').trim();
+}
+avulsos += `${qtd} ${nomeFormatado}\n`;
       }
     }
   });
@@ -259,8 +263,13 @@ spans.forEach(el => {
       combosAdicionados.add(comboKey);
     }
     itens.forEach(({ nome, qtd }) => {
-      text += `- ${qtd}x ${nome}\n`;
-    });
+  // Mantém sabor apenas em Kibe e Churros
+  let nomeFormatado = nome;
+  if (!/Kibe|Churros/i.test(nome)) {
+    nomeFormatado = nome.replace(/\s*\(.*?\)/g, '').trim();
+  }
+  text += `- ${qtd} ${nomeFormatado}\n`;
+});
   });
 
   if (avulsos) {
@@ -270,8 +279,59 @@ spans.forEach(el => {
   lista.textContent = text || '(nenhum item)';
   totalEl.textContent = `Total: R$${total.toFixed(2)}`;
 
-  const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}:\n${dataHora ? `${dataHora}\n\n` : ''}${text}\nTotal: R$${total.toFixed(2)}`;
+  let resumo = `👤Resumo do pedido de: ${nomeCliente}\n\n`;
 
+Object.entries(combosAgrupados).forEach(([comboKey, itens]) => {
+  const isRefri = comboKey.includes('-refri');
+  if (isRefri) return;
+
+  const baseKey = comboKey;
+  const mult = multiplicadores[baseKey] || 1;
+  const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
+    .find(c => c.combo === baseKey);
+
+  const nomeCombo = baseKey;
+  const temRefri = !!combosAgrupados[`${baseKey}-refri`];
+  const refriTexto = temRefri ? ' - Com Refri' : ' - Sem Refri';
+
+  resumo += `🍱${nomeCombo}${refriTexto} - R$${(comboData.preco * mult).toFixed(2)}\n`;
+
+  itens.forEach(({ nome, qtd }) => {
+    const nomeLimpo = nome.split('(')[0].trim();
+    resumo += `  - ${qtd} ${nomeLimpo}\n`;
+  });
+
+  if (temRefri) {
+    const refriItens = combosAgrupados[`${baseKey}-refri`] || [];
+    if (refriItens.length > 0) {
+      const nomesRefri = refriItens.map(r => r.nome).join(', ');
+      resumo += `  - Refri: ${nomesRefri}\n`;
+    }
+  }
+
+  resumo += '\n';
+});
+
+// Salgados avulsos
+const avulsosSelecionados = Array.from(spans)
+  .filter(el => !el.dataset.combo && parseInt(el.dataset.qtd) > 0)
+  .map(el => ({
+    nome: el.dataset.nome.split('(')[0].trim(),
+    qtd: parseInt(el.dataset.qtd)
+  }));
+
+if (avulsosSelecionados.length > 0) {
+  resumo += `🍱Salgados de R$1,00\n`;
+  avulsosSelecionados.forEach(({ nome, qtd }) => {
+    resumo += `  - ${qtd} ${nome}\n`;
+  });
+  resumo += '\n';
+}
+
+// Data e total
+resumo += `📅 _${dataHora}_\n\n`;
+resumo += `Valor Total = *💰R$${total.toFixed(2)}💰*\n\n`;
+resumo += `*📌RETIRADA NA LOJA 01 AO LADO DO BUDEGÃO SUPERMERCADO*`;
   const refriOk = Array.from(combosUsados).every(comboKey => {
   const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
     .find(c => c.combo === comboKey);
