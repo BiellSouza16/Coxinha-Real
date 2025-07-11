@@ -290,11 +290,8 @@ Object.entries(combosAgrupados).forEach(([comboKey, itens]) => {
   const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
     .find(c => c.combo === baseKey);
 
-  const nomeCombo = baseKey;
-  const temRefri = !!combosAgrupados[`${baseKey}-refri`];
-  const refriTexto = temRefri ? ' - Com Refri' : ' - Sem Refri';
-
-  resumo += `🍱${nomeCombo}${refriTexto} - R$${(comboData.preco * mult).toFixed(2)}\n`;
+  const [comboNome, comboTitulo] = baseKey.split(' – ');
+resumo += `🍱${comboNome} - ${comboTitulo} - R$${(comboData.preco * mult).toFixed(2)}\n`;
 
   itens.forEach(({ nome, qtd }) => {
     const nomeLimpo = nome.split('(')[0].trim();
