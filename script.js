@@ -605,4 +605,37 @@ window.addEventListener('beforeunload', function (e) {
     return '';
   }
   // Se não tiver nada, não mostra aviso
+  
+  //-------------------------
+  //BOTÃO FLUTUANTE DE RESUMO
+  //-------------------------
+});
+const verResumoBtn = document.getElementById('verResumoBtn');
+const resumoModal = document.getElementById('resumoModal');
+const fecharResumo = document.getElementById('fecharResumo');
+const resumoTexto = document.getElementById('resumoTexto');
+const sucessoAnimacao = document.getElementById('sucessoAnimacao');
+const finalizarPedido = document.getElementById('finalizarPedido');
+
+verResumoBtn.addEventListener('click', () => {
+  const resumo = gerarResumo(); // <- sua função atual que monta o resumo
+  resumoTexto.textContent = resumo;
+  resumoModal.style.display = 'flex';
+});
+
+fecharResumo.addEventListener('click', () => {
+  resumoModal.style.display = 'none';
+});
+
+finalizarPedido.addEventListener('click', () => {
+  const texto = resumoTexto.textContent;
+  if (!texto.includes('R$')) return alert('Pedido incompleto!');
+
+  sucessoAnimacao.classList.remove('oculto');
+  setTimeout(() => {
+    sucessoAnimacao.classList.add('oculto');
+    const url = "https://wa.me/55SEUNUMERO?text=" + encodeURIComponent(texto);
+    window.open(url, '_blank');
+    resumoModal.style.display = 'none';
+  }, 1500);
 });
