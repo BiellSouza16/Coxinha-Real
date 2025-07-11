@@ -74,5 +74,30 @@
     </div>
   </div>
 </div>
+  <!-- Botão flutuante -->
+<button id="verResumoBtn" class="botao-flutuante">🧾 Ver resumo do pedido</button>
+
+<!-- Modal de Resumo -->
+<div id="resumoModal" class="modal-resumo">
+  <div class="modal-conteudo">
+    <span id="fecharResumo" class="fechar">&times;</span>
+    
+    <!-- Etapas de progresso -->
+    <div id="barraProgresso" class="etapas">
+      <span class="etapa ativa">Combo</span>
+      <span class="etapa ativa">Sabores</span>
+      <span class="etapa ativa">Resumo</span>
+    </div>
+
+    <!-- Resumo -->
+    <pre id="resumoTexto"></pre>
+
+    <!-- Botão de finalizar -->
+    <button id="finalizarPedido" class="botao-whatsapp">✅ Finalizar pedido no WhatsApp</button>
+
+    <!-- Animação de sucesso -->
+    <div id="sucessoAnimacao" class="animacao-sucesso oculto">🎉 Pedido Concluído!</div>
+  </div>
+</div>
 </body>
 </html>
