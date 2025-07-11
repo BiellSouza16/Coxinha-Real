@@ -291,38 +291,49 @@ Object.entries(combosAgrupados).forEach(([comboKey, itens]) => {
     .find(c => c.combo === baseKey);
 
   const [comboNome, comboTitulo] = baseKey.split(' – ');
-resumo += `🍱${comboNome} - ${comboTitulo} - R$${(comboData.preco * mult).toFixed(2)}\n`;
+  resumo += `🍱${comboNome} - ${comboTitulo} - R$${(comboData.preco * mult).toFixed(2)}\n`;
 
   itens.forEach(({ nome, qtd }) => {
-    const nomeLimpo = nome.split('(')[0].trim();
-    resumo += `  - ${qtd} ${nomeLimpo}\n`;
+    const nomeFormatado = /Kibe|Churros/i.test(nome) ? nome : nome.split('(')[0].trim();
+    resumo += `  • ${qtd} ${nomeFormatado}\n`;
   });
 
-  if (temRefri) {
-    const refriItens = combosAgrupados[`${baseKey}-refri`] || [];
-    if (refriItens.length > 0) {
-      const nomesRefri = refriItens.map(r => r.nome).join(', ');
-      resumo += `  - Refri: ${nomesRefri}\n`;
-    }
+  // Se tiver refrigerante
+  const refriItens = combosAgrupados[`${baseKey}-refri`] || [];
+  if (refriItens.length > 0) {
+    const agrupados = {};
+    refriItens.forEach(({ nome, qtd }) => {
+      if (!agrupados[nome]) agrupados[nome] = 0;
+      agrupados[nome] += qtd;
+    });
+    Object.entries(agrupados).forEach(([nome, qtd]) => {
+      resumo += `  • ${qtd} ${nome}\n`;
+    });
   }
 
-  resumo += '\n';
+  resumo += `\n`;
 });
 
 // Salgados avulsos
 const avulsosSelecionados = Array.from(spans)
   .filter(el => !el.dataset.combo && parseInt(el.dataset.qtd) > 0)
-  .map(el => ({
-    nome: el.dataset.nome.split('(')[0].trim(),
-    qtd: parseInt(el.dataset.qtd)
-  }));
+  .map(el => {
+    const nomeOriginal = el.dataset.nome;
+    const nomeFormatado = /Kibe|Churros/i.test(nomeOriginal)
+      ? nomeOriginal
+      : nomeOriginal.split('(')[0].trim();
+    return {
+      nome: nomeFormatado,
+      qtd: parseInt(el.dataset.qtd)
+    };
+  });
 
 if (avulsosSelecionados.length > 0) {
   resumo += `🍱Salgados de R$1,00\n`;
   avulsosSelecionados.forEach(({ nome, qtd }) => {
-    resumo += `  - ${qtd} ${nome}\n`;
+    resumo += `  • ${qtd} ${nome}\n`;
   });
-  resumo += '\n';
+  resumo += `\n`;
 }
 
 // Data e total
