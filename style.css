@@ -1,0 +1,366 @@
+/* style.css - atualizado com melhorias visuais */
+
+* {
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff8e1;
+  margin: 0;
+  padding-bottom: 130px;
+  color: #333;
+}
+
+header {
+  background: #ffcc00;
+  color: #222;
+  padding: 20px;
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  letter-spacing: 1px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logo {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgb(255, 187, 0);
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+  padding: 4px;
+}
+
+section {
+  padding: 16px;
+  max-width: 900px;
+  margin: auto;
+}
+
+h2 {
+  color: #cc0000;
+  margin-top: 30px;
+  font-size: 1.5em;
+  border-bottom: 2px solid #cc0000;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.card-box {
+  border: 2px solid #ffcc00;
+  padding: 15px;
+  margin: 14px 0;
+  background: #fffbe6;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-box.erro-combo {
+  border: 2px solid #ff4444;
+  background-color: #ffe5e5;
+}
+.mensagem-erro {
+  color: red;
+  font-weight: bold;
+  margin-top: 8px;
+  display: none; /* Escondido por padrão */
+}
+
+.item, .bebida, .combo, .sabores .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.quantidade {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.quantidade button {
+  background: #ffcc00;
+  border: none;
+  padding: 6px 10px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.quantidade button:hover {
+  background: #e6b800;
+}
+
+.obs {
+  font-size: 0.95em;
+  color: #555;
+  background: #fff3c4;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border-left: 5px solid #cc0000;
+}
+
+#resumo, #cliente {
+  background: #fff;
+  border-top: 2px solid #ccc;
+  padding: 15px;
+  position: sticky;
+  bottom: 80px;
+  z-index: 5;
+}
+
+.agendamento {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.agendamento label {
+  font-weight: 600;
+}
+
+#total {
+  font-weight: bold;
+  margin-top: 14px;
+  font-size: 1.2em;
+}
+
+#whatsapp-btn {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background: #25d366;
+  color: white;
+  font-size: 1.1em;
+  padding: 14px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+#whatsapp-btn:hover {
+  transform: scale(1.07);
+  background-color: #1ebd5b;
+}
+
+input[type="text"], input[type="date"], input[type="time"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 1em;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+}
+
+.sabores {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.combo-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #b30000;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.combo-sub {
+  font-size: 0.95em;
+  color: #444;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+select, input[type="number"] {
+  padding: 6px;
+  border-radius: 6px;
+  margin-left: 10px;
+  border: 1px solid #bbb;
+  font-size: 0.95em;
+}
+
+.combo-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+button.limpar-combo {
+  background: #ff6666;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button.limpar-combo:hover {
+  background: #cc0000;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-bottom: 150px;
+  }
+
+  section {
+    padding: 10px 15px;
+  }
+
+  .item, .bebida, .combo, .sabores .item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quantidade {
+    margin-top: 6px;
+  }
+
+  #whatsapp-btn {
+    padding: 12px 18px;
+    font-size: 1em;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  input[type="text"], select, input[type="number"], input[type="date"], input[type="time"] {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 6px;
+  }
+
+  .combo-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+@keyframes piscar-vermelho {
+  0% { box-shadow: 0 0 0px red; }
+  50% { box-shadow: 0 0 10px red; }
+  100% { box-shadow: 0 0 0px red; }
+}
+
+.erro-combo {
+  animation: piscar-vermelho 0.6s ease;
+}
+.card-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #ffa500;
+  background-color: #fffbe0;
+  cursor: pointer;
+}
+#nomeCliente:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 8px #ffcc00;
+  background: #fffbe6;
+}
+#whatsapp-btn.pronto {
+  animation: pulsar 1.2s infinite;
+}
+
+@keyframes pulsar {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background-color: #fffce6;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 3px solid #ffcc00;
+  animation: aparecerModal 0.3s ease;
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  color: #cc0000;
+}
+
+.modal-botoes {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.modal-botoes button {
+  padding: 10px 16px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#confirmarEnvio {
+  background-color: #25d366;
+  color: white;
+}
+
+#confirmarEnvio:hover {
+  background-color: #1ebd5b;
+}
+
+#cancelarEnvio {
+  background-color: #ff6666;
+  color: white;
+}
+
+#cancelarEnvio:hover {
+  background-color: #cc0000;
+}
+
+@keyframes aparecerModal {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
